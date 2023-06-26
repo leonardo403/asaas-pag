@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\ClientRequest;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Controllers\Controller;
+use App\Services\AsaasService;
 
 class ClientController extends Controller
 {
@@ -15,13 +17,18 @@ class ClientController extends Controller
      */
     private $client;
 
-    public function __construct(
+    /**
+     * @var AsaasService
+     */
+    private $asaasService;
 
+    public function __construct(
+        AsaasService $asaasService,
         Client $client
     )
     {
-
         $this->client = $client;
+        $this->asaasService = $asaasService;
     }
 
     /**
@@ -45,9 +52,10 @@ class ClientController extends Controller
      */
     public function store(ClientRequest $request)
     {
+
         try {
             // Valida o CPF ou CNPJ
-            $cpf_cnpj = formatOnlyNumber($request->cpf_cnpj);
+            $cpf_cnpj = formatOnlyNumber($request->input('cpf_cnpj'));
 
             if(!validateCpfCnpj($cpf_cnpj)){
                 return response()->json('O CPF ou CNPJ informado é inválido.', Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -56,23 +64,23 @@ class ClientController extends Controller
             $client = $this->client->findCpfCnpj($cpf_cnpj)->first();
 
             if (!$client) {
+                $response = $this->asaasService->createClient($request);
                 $client = Client::create($request->validated());
-
-                $response = Http::post('', [
-                    $client
-                ]);
-
-                $client = $this->client->findCpfCnpj($cpf_cnpj)->first();
+                if($response['status'] == 200){
+                    $client->asaas_id = $response['data']['id'];
+                    $client->save();
+                }
+                //$client = $this->client->findCpfCnpj($cpf_cnpj)->first();
             }
-
-
 
             return response()->json([
                                     'message' => 'Cadastrado com sucesso !',
                                     'data' => $client], Response::HTTP_CREATED
                                 );
-        } catch (\Throwable $th) {
-            return response()->json('Erro ao processar a requisição.', Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return response()->json([
+                     'Exception message:' => $e->getMessage() ." - ". $e->getCode()],
+                      Response::HTTP_BAD_REQUEST);
         }
 
     }
@@ -96,9 +104,21 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ClientRequest $request, Client $client)
+    public function update(ClientRequest $request, $id)
     {
-        //
+        // Verifica se o cliente existe
+        $client = $this->client->find($id);
+
+        if (!$client) {
+            return response()->json('Cliente não encontrado.', 404);
+        }
+
+        $response = $this->asaasService->updateClient($request, $client->asaas_id);
+
+        if($response['status'] != 200) {
+            return response()->json($response['data'], $response['status']);
+        }
+
     }
 
     /**

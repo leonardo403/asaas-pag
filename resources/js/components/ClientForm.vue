@@ -9,10 +9,34 @@
           </div>
           <div class="mb-3">
             <label for="cpf_cnpj" class="form-label">CPF_CNPJ:</label>
-            <input class="form-control" type="number" id="cpf_cnpj" v-model="client.cpf_cnpj" required />
+            <input class="form-control" type="text" id="cpf_cnpj" v-model="client.cpf_cnpj" required />
+          </div>
+          <div class="mb-3">
+            <label for="address" class="form-label">Endereço:</label>
+            <input class="form-control" type="text" id="address" v-model="client.address" required />
+          </div>
+          <div class="mb-3">
+            <label for="address_number" class="form-label">N°:</label>
+            <input class="form-control" type="text" id="address_number" v-model="client.address_number" required />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">E-mail:</label>
+            <input class="form-control" type="text" id="email" v-model="client.email" required />
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Telefone:</label>
+            <input class="form-control" type="text" id="phone" v-model="client.phone" required />
+          </div>
+          <div class="mb-3">
+            <label for="postal_code" class="form-label">CEP:</label>
+            <input class="form-control" type="text" id="postal_code" v-model="client.postal_code" required />
+          </div>
+          <div class="mb-3">
+            <label for="province" class="form-label">Cidade:</label>
+            <input class="form-control" type="text" id="province" v-model="client.province" required />
           </div>
           <button type="submit" v-if="isNewClient" class="btn btn-primary">Salvar </button>
-          <button type="submit" v-else class="btn btn-primary">Update Product</button>
+          <button type="submit" v-else class="btn btn-primary">Atualizar Cliente</button>
         </form>
     </div>
   </template>
@@ -38,7 +62,7 @@
     async created() {
       if (!this.isNewClient) {
         const response = await axios.get(`/api/clients/${this.$route.params.id}`);
-        this.product = response.data;
+        this.client = response.data;
       }
     },
     methods: {

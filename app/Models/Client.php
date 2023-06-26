@@ -4,22 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 class Client extends Model
 {
     use HasFactory;
-}
-<?php
 
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-
-class Client extends Model
-{
-    use HasFactory;
     protected $fillable = [
         'asaas_id',
         'cpf_cnpj',
@@ -35,6 +23,6 @@ class Client extends Model
 
     public function findCpfCnpj($cpf_cpnj)
     {
-        return $query->where('cpf_cnpj', '=', $cpf_cpnj);
+        return $this::where('cpf_cnpj', '=', $cpf_cpnj);
     }
 }

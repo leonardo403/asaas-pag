@@ -28,7 +28,7 @@ class BaseFormRequest extends FormRequest
             'PUT', 'PATCH' => $this->update(),
             'DELETE' => $this->destroy(),
             default => $this->view()
-        }
+        };
 
     }
 
