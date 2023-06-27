@@ -32,7 +32,7 @@
             <input class="form-control" type="text" id="postal_code" v-model="client.postal_code" required />
           </div>
           <div class="mb-3">
-            <label for="province" class="form-label">Cidade:</label>
+            <label for="province" class="form-label">Bairro:</label>
             <input class="form-control" type="text" id="province" v-model="client.province" required />
           </div>
           <button type="submit" v-if="isNewClient" class="btn btn-primary">Salvar </button>
@@ -50,7 +50,12 @@
         client: {
           name: '',
           cpf_cnpj: '',
-
+          address: '',
+          address_number: '',
+          email: '',
+          phone: '',
+          postal_code: '',
+          province: ''
         }
       }
     },
